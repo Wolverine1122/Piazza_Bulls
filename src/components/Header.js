@@ -9,7 +9,7 @@ import { Image } from "@chakra-ui/react";
 const Header = () => {
     return (
         <div>
-            <Grid templateColumns="1fr 2fr 1fr" gap={5}>
+            <Grid maxW={1000} templateColumns="1fr 2fr 1fr" gap={5}>
                 <GridItem colSpan={1}>
                     <Image src="logo.png" width="25%" alt="angry-unicorn-logo" />
                 </GridItem>

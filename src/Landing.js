@@ -7,8 +7,8 @@ import { ArrowForwardIcon, ChatIcon, SpinnerIcon, ViewIcon } from '@chakra-ui/ic
 
 const Landing = () => {
     return (
-        <Grid>
-            <Grid className="hero-section" h="100vh" templateRows="min-content 1fr">
+        <Grid justifyContent={"center"}>
+            <Grid className="hero-section" h="100vh" maxH={700} templateRows="min-content 1fr">
                 <Box px={20} py={5}>
                     <Header />
                 </Box>
@@ -25,7 +25,7 @@ const Landing = () => {
                 </Grid>
             </Grid>
 
-            <Grid className="features-section" h="100vh" justifyContent="center" pl={20} pr={20} alignContent="center">
+            <Grid className="features-section" h="100vh" maxH={700} justifyContent="center" pl={20} pr={20} gap='15' alignContent="center">
                 <Heading textAlign="center" mb={10}>Features old Piazza could never</Heading>
                 <Grid templateColumns='repeat(3, 1fr)' gap='10'>
                     <Feature title="Ditch emails" description="Email is for business people, not engineers. Instant message for life" icon={ChatIcon} />
