@@ -33,6 +33,7 @@ const SignUp = (props) => {
         console.log(username);
         console.log(email);
         console.log(pass);
+        console.log(response);
     }
 
     return (
@@ -54,7 +55,7 @@ const SignUp = (props) => {
 
                     <button type="submit" className="mt-4 border-2 border-indigo-700 bg-indigo-700 text-white py-1 w-full rounded-lg hover:bg-indigo-500 hover:text-white font-semibold">SignUp</button>
                 </form>
-                <div className="p-5 text-center font-medium text-center text-black hover:underline dark:text-primary-500">
+                <div className="p-5 font-medium text-center text-black hover:underline dark:text-primary-500">
                     <Link to="/log-in" >Already have an account? Login here</Link>
                 </div>
             </div>
