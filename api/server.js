@@ -8,15 +8,25 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+
+
 app.post('/sign-up', async (req, res) => {
     try {
         const { role, username, email, password } = req.body;
+        var permissionid = 0;
+        if (role.toLowerCase() === 'student')
+            permissionid =0;
+        else if (role.toLowerCase() == 'teacher' || 'professor')
+            permissionid =1;
+        else if(role.toLowerCase() == 'ta' || 'teaching assistant')
+            permissionid = 2;
+        
+        
         const newUser = await pool.query(
-            'INSERT INTO users (role, username, email, password) VALUES ($1, $2, $3, $4) RETURNING *',
-            [role, username, email, password]
+            'INSERT INTO users (role, username, email, password,permissionid) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [role, username, email, password, permissionid]
         );
-
-
+        
         console.log(newUser);
         res.json(newUser.rows[0]);
     } catch (err) {
@@ -47,18 +57,25 @@ app.get('/checkUserExists', async (req, res) => {
 
 app.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            res.status(400).json({ error: 'Email and password are required' });
+        const { username, password } = req.body;
+        if (!username || !password) {
+            res.status(400).json({ error: 'username and password are required' });
             return;
         }
         const user = await pool.query(
-            'SELECT * FROM users WHERE email = $1 AND password = $2',
-            [email, password]
+            'SELECT * FROM users WHERE username = $1 AND password = $2',
+            [username, password]
+            
         );
+       
         if (user.rows.length === 0) {
-            res.status(400).json({ error: 'Invalid email or password' });
+            res.status(400).json({ error: 'Invalid username or password' });
             return;
+        }
+        else
+        {
+            console.log(user);
+            res.status(200).send("Successful Login");
         }
 
     } catch (err) {
@@ -67,18 +84,21 @@ app.post('/login', async (req, res) => {
 });
 
 // Get list of classes for a specific user
-app.get('/classes', async (req, res) => {
+app.get('/classes/:username', async (req, res) => {
+    console.log("classes called");
     try {
-        const { username} = req.body;
-        if (!username) {
+      //  const { classid, classtitle, description, qtyoftopics, username} = req.body;
+      const  username  = req.params.username; 
+      if (!username) {
             res.status(400).json({ error: 'Username parameter is required' });
             return;
         }
         const classes = await pool.query(
-            'SELECT * FROM classes WHERE username = $1',
+            'SELECT * FROM classes NATURAL JOIN memberof WHERE memberof.username=$1',
             [username]
         );
         res.json(classes.rows);
+        console.log(classes.rows);
     } catch (err) {
         console.error(err.message);
     }

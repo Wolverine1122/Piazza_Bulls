@@ -11,7 +11,8 @@ const router = Router(
   createRoutesFromElements(
     <Route path="/">
       <Route index element={<Landing />} />
-      <Route path="courses" element={<Courses />}/>
+      <Route path="courses/:username" element={<Courses />}/>
+      
       <Route path="courses/:id/posts" element={<Posts />} />
       <Route path="sign-up" element={<SignUp />} />
       <Route path="log-in" element={<LogIn />} />

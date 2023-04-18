@@ -1,26 +1,72 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import './style.css';
+
 const SignUp = (props) => {
-    const [role, setRole] = useState('');
+    
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
+    const[role,setSelects ] = useState();
+    const [errors, setErrors] = useState({});
 
-
-    //connect here <- currently just logging it 
+    //validation function 
+    const validateForm = () => {
+        let errors = {};
+        let isValid = true;
+    
+        if (!username.trim()) {
+            errors.username = 'Username is required';
+            isValid = false;
+        }
+    
+    
+        if (!email.trim()) {
+            errors.email = 'Email is required';
+            isValid = false;
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            errors.email = 'Email is invalid';
+            isValid = false;
+        }
+    
+        if (!pass.trim()) {
+            errors.pass = 'Password is required';
+            isValid = false;
+        } else if (pass.trim().length < 6) {
+            errors.pass = 'Password must be at least 6 characters long';
+            isValid = false;
+        }
+    
+        setErrors(errors);
+    
+        return isValid;
+    };
+    
+    //connect here 
     const handleSubmit = (e) => {
         e.preventDefault();
             
-        // TODO: add validation, check if user exists already, hash password before sending to server
-        
-        
+        // TODO:  check if user exists already, hash password before sending to server
+        //async (req, res) =>
         const body = {
             role: role,
             username: username,
             email: email,
             password: pass
         }
+   
+         //check if user exists    
+       /* const rep = fetch('http://localhost:5000/checkUserExists', {
+            method: 'GET', 
+            headers: { 
+            'Content-Type': 'application/json'}, 
+            body:JSON.stringify(body)
+        })
+            .then(rep => console.log(rep));*/
+       
+            
+    
+        if(validateForm()){
         const response = fetch('http://localhost:5000/sign-up', {
             method: 'POST',
             headers: {
@@ -34,7 +80,13 @@ const SignUp = (props) => {
         console.log(email);
         console.log(pass);
         console.log(response);
+
+
+        
     }
+    }
+
+    
 
     return (
         <div className="flex justify-center items-center h-screen bg-gradient-to-tr from-indigo-100 to-white-100">
@@ -42,16 +94,24 @@ const SignUp = (props) => {
                 <h2 className="text-2xl block text-center font-semibold">SignUp Here</h2>
                 <form className="" onSubmit={handleSubmit}>
                     <label htmlFor="role" className="block text-base mb-2">Role</label>
-                    <input value={role} onChange={(e) => setRole(e.target.value)} type="role" placeholder="role" id="role" name="role" className="mb-2 bg-white-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
+                    <select value={role} onChange={(e) => setSelects(e.target.value)} type="role" placeholder="role" id="role" name="role" className="mb-2 bg-white-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5">  
+                        <option>Student</option>
+                        <option>Professor</option>
+                        <option>TA</option>
+                    </select>
+                   
 
                     <label htmlFor="username" className="block text-base mb-2">Username</label>
                     <input value={username} onChange={(e) => setUsername(e.target.value)} type="username" placeholder="username" id="username" name="username" className="mb-2 bg-white-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
-
+                    {errors.username && <span className="text-red-500">{errors.username}</span>}
+                    
                     <label htmlFor="email" className="block text-base mb-2">Email</label>
                     <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="email" id="email" name="email" className=" mb-2 bg-white-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
+                    {errors.email && <span className="text-red-500">{errors.email}</span>}
 
                     <label htmlFor="password" className="block text-base mb-2">Password</label>
                     <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="password" id="password" name="password" className=" mb-2 bg-white-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
+                    {errors.pass && <span className="text-red-500">{errors.pass}</span>}
 
                     <button type="submit" className="mt-4 border-2 border-indigo-700 bg-indigo-700 text-white py-1 w-full rounded-lg hover:bg-indigo-500 hover:text-white font-semibold">SignUp</button>
                 </form>
