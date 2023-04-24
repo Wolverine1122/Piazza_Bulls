@@ -16,7 +16,7 @@ export const LogIn = (props) => {
         password: pass,
     }
 
-
+// TODO: handle invalid login
       e.preventDefault();
   
         const response = fetch('http://localhost:5000/login', {
@@ -27,17 +27,17 @@ export const LogIn = (props) => {
                 body: JSON.stringify(body)
             })
                 .then((response) => {
+                    console.log(response);
                     if (response.ok) {
                       navigate(`/courses/${username}`); // redirect to courses page
                     }
                   });
           
       
- 
     
    }
 
-    
+// TODO: add close button to modal
     return (
         <div className="flex justify-center items-center h-screen bg-gradient-to-tr from-indigo-100 to-white-100">
         <div className = "w-96 p-6 shadow-lg bg-white rounded-xl">

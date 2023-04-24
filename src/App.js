@@ -13,7 +13,7 @@ const router = Router(
       <Route index element={<Landing />} />
       <Route path="courses/:username" element={<Courses />}/>
       
-      <Route path="courses/:id/posts" element={<Posts />} />
+      <Route path="classes/:id/posts" element={<Posts />} />
       <Route path="sign-up" element={<SignUp />} />
       <Route path="log-in" element={<LogIn />} />
       <Route path="*" element={<NotFound/>} />

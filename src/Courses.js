@@ -2,7 +2,7 @@
   import React, {useState, useEffect } from "react";
   import './style.css';
 
-
+// TODO: add a text if there are no courses
 const Courses = (props) => {
     const { username } = useParams();
     const [classes, setClasses] = useState([]);
@@ -14,11 +14,11 @@ const Courses = (props) => {
             setClasses(data);
         }
         fetchData();
-    }, [username]);
+    }, [username]); 
 
    
 
-    return (
+    return ( 
         <div className="">
        <header aria-label="Page Header" class="bg-gray-50">
   <div className="mx-auto max-w-screen-xl px-4 py-8" style={{height:'80%'}}>
@@ -58,11 +58,11 @@ const Courses = (props) => {
                             
                 
                     <div className="w-full m-5 p-6 bg-white border border-gray-200 rounded-lg shadow ">
-                    <Link to={`/courses/${course.classid}/posts`}>
+                    <Link to={`/classes/${course.classid}/posts`}>
                             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900"> {course.classtitle} </h5>
                             </Link>
                         <p className="mb-3 font-normal text-gray-700 ">{course.description}</p>
-                        <Link to={`/courses/${course.classid}/posts`}  className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600" >Posts                           
+                        <Link to={`/classes/${course.classid}/posts`}  className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600" >Posts                           
                         <svg aria-hidden="true" className="w-4 h-4 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                     
                         </Link>

@@ -11,22 +11,23 @@ app.use(cors());
 
 
 app.post('/sign-up', async (req, res) => {
+    console.log("sign up called")
     try {
         const { role, username, email, password } = req.body;
         var permissionid = 0;
         if (role.toLowerCase() === 'student')
-            permissionid =0;
+            permissionid = 0;
         else if (role.toLowerCase() == 'teacher' || 'professor')
-            permissionid =1;
-        else if(role.toLowerCase() == 'ta' || 'teaching assistant')
+            permissionid = 1;
+        else if (role.toLowerCase() == 'ta' || 'teaching assistant')
             permissionid = 2;
-        
-        
+
+
         const newUser = await pool.query(
             'INSERT INTO users (role, username, email, password,permissionid) VALUES ($1, $2, $3, $4, $5) RETURNING *',
             [role, username, email, password, permissionid]
         );
-        
+
         console.log(newUser);
         res.json(newUser.rows[0]);
     } catch (err) {
@@ -56,8 +57,10 @@ app.get('/checkUserExists', async (req, res) => {
 );
 
 app.post('/login', async (req, res) => {
+    console.log("login called")
     try {
         const { username, password } = req.body;
+
         if (!username || !password) {
             res.status(400).json({ error: 'username and password are required' });
             return;
@@ -65,16 +68,15 @@ app.post('/login', async (req, res) => {
         const user = await pool.query(
             'SELECT * FROM users WHERE username = $1 AND password = $2',
             [username, password]
-            
+
         );
-       
+
         if (user.rows.length === 0) {
-            res.status(400).json({ error: 'Invalid username or password' });
+            console.log("Invalid username or password");
+            res.status(401).json({ error: 'Invalid username or password' });
             return;
         }
-        else
-        {
-            console.log(user);
+        else {
             res.status(200).send("Successful Login");
         }
 
@@ -83,13 +85,14 @@ app.post('/login', async (req, res) => {
     }
 });
 
+
 // Get list of classes for a specific user
 app.get('/classes/:username', async (req, res) => {
     console.log("classes called");
     try {
-      //  const { classid, classtitle, description, qtyoftopics, username} = req.body;
-      const  username  = req.params.username; 
-      if (!username) {
+        //  const { classid, classtitle, description, qtyoftopics, username} = req.body;
+        const username = req.params.username;
+        if (!username) {
             res.status(400).json({ error: 'Username parameter is required' });
             return;
         }
@@ -104,7 +107,26 @@ app.get('/classes/:username', async (req, res) => {
     }
 });
 
+// Get a list of posts for a course
+app.get("/classes/:classid/posts", async (req, res) => {
 
+    console.log("posts called");
+    try {
+        const classid = req.params.classid;
+        if (!classid) {
+            res.status(400).json({ error: 'Classid parameter is required' });
+            return;
+        }
+        const posts = await pool.query(
+            'SELECT * FROM posts WHERE classid=$1',
+            [classid]
+        );
+        res.json(posts.rows);
+        console.log(posts.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
 
 
 

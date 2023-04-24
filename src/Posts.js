@@ -10,6 +10,11 @@ const Posts = () => {
         return null;
     }
 
+    // TODO: fetch posts from backend http://localhost:5000/classes/${id}/posts`
+    
+
+
+
     return (
         <div>
             <h1>Posts here</h1>
