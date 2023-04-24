@@ -34,6 +34,70 @@ app.post('/sign-up', async (req, res) => {
         console.error(err.message);
     }
 });
+
+// gets the role of a user
+app.get('/getrole/:username', async (req, res) => {
+    console.log("getting role");
+    const  username  = req.params.username; 
+    const role = await pool.query(
+        'SELECT role FROM users WHERE username = $1',
+        [username]
+    );
+    console.log(role.rows[0].role);
+    console.log(username);
+    res.json({role: role.rows[0].role,}); 
+
+} );
+
+
+app.post('/classes/:username/addcourse', async (req, res) => {
+    console.log("i am here");
+    console.log("add course called");
+        const  username  = req.params.username; 
+        const role = await pool.query(
+            'SELECT role FROM users WHERE username = $1',
+            [username]
+        );
+        console.log(role.rows[0].role);
+        console.log(username);
+        //res.json({role: role.rows[0].role,}); //this WORKED
+
+        if( role.rows[0].role == 'Professor')
+        {
+            //console.log("i am a professor");
+            const {classid, classtitle, description} = req.body;
+            var qtyoftopics = 0; 
+            const  newCourse = await pool.query('INSERT INTO classes (classid, classtitle, description, qtyoftopics) VALUES ($1, $2, $3, $4) RETURNING * ',
+            [classid, classtitle, description,qtyoftopics ] 
+            );
+            const  newMem = await pool.query('INSERT INTO MemberOf (username, classid) VALUES ($1, $2) RETURNING * ',
+            [username, classid] 
+            );
+            console.log(newCourse);
+            console.log(newMem);
+            res.json(newCourse.rows);
+
+        }
+        else if( role.rows[0].role =='Student' || 'TA')
+        {
+           // console.log("I am a student/TA");
+            const {classid} = req.body;
+            const  newMem = await pool.query('INSERT INTO MemberOf (username, classid) VALUES ($1, $2) RETURNING * ',
+            [username, classid]
+            );
+            console.log(newMem);
+            res.json(newMem.rows);
+
+
+        }
+        else 
+        {
+            console.log("Not a valid role");
+        }
+
+
+});
+
 // return true if the user exists in the database with the email
 app.get('/checkUserExists', async (req, res) => {
     console.log('userExists called ');

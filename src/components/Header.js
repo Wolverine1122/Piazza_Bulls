@@ -11,7 +11,7 @@ const Header = () => {
         <div>
             <Grid maxW={1000} templateColumns="1fr 2fr 1fr" gap={5}>
                 <GridItem colSpan={1}>
-                    <Image src="logo.png" width="25%" alt="angry-unicorn-logo" />
+                    <Image src="/logo.png" width="25%" alt="angry-unicorn-logo" />
                 </GridItem>
                 <Grid templateColumns="repeat(3, 1fr)" gap={10} alignItems="center" justifyItems="center">
                     <GridItem>
