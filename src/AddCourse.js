@@ -1,10 +1,9 @@
-import {Link,  useParams, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import React, {useState, useEffect } from "react";
 import './style.css';
 
-const AddCourse = (props) => {
-    const { username } = useParams();
-    //const response = fetch(`http://localhost:5000/classes/${username}/addcourse`)
+const AddCourse = ({userId}) => {
+    //const response = fetch(`http://localhost:5000/classes/${userId}/addcourse`)
    
     const [classid, setID] = useState('');
     const [classtitle, setTitle] = useState('');
@@ -17,12 +16,12 @@ const AddCourse = (props) => {
     useEffect (()=>
     {
         async function fetchData() {
-            const response = await fetch(`http://localhost:5000/getrole/${username}`);
+            const response = await fetch(`http://localhost:5000/getrole/${userId}`);
             const data = await response.json();
             setRole(data.role);
         }
         fetchData();
-    },[username])
+    },[userId])
 
 
     const handleSubmit = async (e) => {
@@ -33,7 +32,7 @@ const AddCourse = (props) => {
             description: description,}
     
 
-        const response = await fetch(`http://localhost:5000/classes/${username}/addcourse`, {
+        const response = await fetch(`http://localhost:5000/classes/${userId}/addcourse`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -47,7 +46,7 @@ const AddCourse = (props) => {
         console.log(classtitle);
         console.log(description);
         console.log(count);
-        navigate(`/courses/${username}`);
+        navigate(`/courses/${userId}`);
     }
   
 
@@ -57,7 +56,7 @@ const AddCourse = (props) => {
         <div>
             <div className="flex justify-center items-center h-screen bg-gradient-to-tr from-indigo-100 to-white-100">
                 <div className="w-96 p-6 shadow-lg bg-white rounded-xl">
-                <h1 className="text-1xl block text-center font-regular">Hi {role} {username}!</h1>
+                <h1 className="text-1xl block text-center font-regular">Hi {role} {userId}!</h1>
                     <h2 className="text-2xl block text-center font-semibold">Add a new course</h2> 
                         
                         <form className="" onSubmit={handleSubmit}>

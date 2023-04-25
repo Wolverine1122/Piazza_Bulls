@@ -1,13 +1,11 @@
 import { Link, useNavigate} from "react-router-dom";
 import React, {useState} from "react";
 import './style.css';
-export const LogIn = (props) => {
+export const LogIn = ({onLogin}) => {
     const [username, setUsername] = useState('');
     const [pass, setPass] = useState('');
     const navigate = useNavigate();
    
-  
-
    //connect here <- currently just logging it 
    const handleSubmit =  (e) => 
    {
@@ -16,28 +14,23 @@ export const LogIn = (props) => {
         password: pass,
     }
 
-
-      e.preventDefault();
+    e.preventDefault();
   
-        const response = fetch('http://localhost:5000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            })
-                .then((response) => {
-                    if (response.ok) {
-                      navigate(`/courses/${username}`); // redirect to courses page
-                    }
-                  });
-          
-      
- 
-    
+    const response = fetch('http://localhost:5000/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        })
+        .then((response) => {
+            if (response.ok) {
+                onLogin(username);
+                navigate(`/courses/${username}`); // redirect to courses page
+            }
+        });
    }
 
-    
     return (
         <div className="flex justify-center items-center h-screen bg-gradient-to-tr from-indigo-100 to-white-100">
         <div className = "w-96 p-6 shadow-lg bg-white rounded-xl">
