@@ -1,5 +1,5 @@
-import { createBrowserRouter as Router, Route, createRoutesFromElements, RouterProvider } from "react-router-dom";
-
+import { Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Landing from "./Landing";
 import Courses from "./Courses";
 import Saved from "./Saved";
@@ -9,23 +9,48 @@ import LogIn from "./LogIn";
 import NotFound from "./NotFound";
 import AddCourse from "./AddCourse";
 
-const router = Router(
-  createRoutesFromElements(
-    <Route path="/">
-      <Route index element={<Landing />} />
-      <Route path="courses/:username" element={<Courses />}/>
-      <Route path ="courses/:username/addcourse" element = {<AddCourse />}/>
-      <Route path="courses/:id/posts" element={<Posts />} />
-      <Route path="courses/:id/saved" element={<Saved />} />
-      <Route path="sign-up" element={<SignUp />} />
-      <Route path="log-in" element={<LogIn />} />
-      <Route path="*" element={<NotFound/>} />
-    </Route>
-  ));
 
 function App() {
+  const [authenticated, setAuthenticated] = useState(false);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setUserId(storedUserId);
+      setAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogIn = (userId) => {
+    localStorage.setItem('userId', userId);
+    setUserId(userId);
+    setAuthenticated(true);
+  };
+
+  // const handleLogOut = () => {
+  //   localStorage.removeItem('isLoggedIn');
+  //   setAuthenticated(false);
+  // };
+
   return (
-    <RouterProvider router={router} />
+    <Routes path="/">
+      <Route index element={<Landing />} />
+      {
+        authenticated && (
+          <>
+            <Route path={`courses/${userId}`} element={<Courses userId={userId}/>} />
+            <Route path={`courses/${userId}/addcourse`} element={<AddCourse userId={userId}/>} />
+            <Route path={`courses/${userId}/course/:id/posts`} element={<Posts userId={userId}/>} />
+            <Route path={`courses/${userId}/course/:id/saved`} element={<Saved userId={userId}/>} />
+          </>
+        )
+      }
+
+      <Route path="sign-up" element={<SignUp />} />
+      <Route path="log-in" element={<LogIn onLogin={handleLogIn}/>} />
+      <Route path="*" element={<NotFound/>} />
+    </Routes>
   );
 }
 
