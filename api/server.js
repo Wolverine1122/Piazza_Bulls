@@ -99,7 +99,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-
 // Get list of classes for a specific user
 app.get('/classes/:username', async (req, res) => {
     console.log("classes called");
@@ -184,6 +183,109 @@ app.post('/classes/:username/addcourse', async (req, res) => {
 
 
 });
+
+// get list of topics for specific class
+app.get('/classes/:classid/topics', async (req, res) => {
+    console.log("topics called");
+    try {
+        const classid = req.params.classid;
+        if (!classid) {
+            res.status(400).json({ error: 'Classid parameter is required' });
+            return;
+        }
+        const topics = await pool.query(
+            'SELECT * FROM topics WHERE classid=$1',
+            [classid]
+        );
+        res.json(topics.rows);
+        console.log(topics.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+// get list of posts for specific topic
+app.get('/classes/:classid/topics/:topicid/posts', async (req, res) => {
+    console.log("posts called");
+    try {
+        const classid = req.params.classid;
+        const topicid = req.params.topicid;
+        if (!classid || !topicid) {
+            res.status(400).json({ error: 'Classid and topicid parameters are required' });
+            return;
+        }
+        const posts = await pool.query(
+            'SELECT * FROM posts WHERE classid=$1 AND topicid=$2',
+            [classid, topicid]
+        );
+        res.json(posts.rows);
+        console.log(posts.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+
+// get all asnwers for a specific post
+app.get('/classes/:classid/posts/:postid/answers', async (req, res) => {
+    console.log("answers called");
+    try {
+        const classid = req.params.classid;
+        const postid = req.params.postid;
+        if (!classid || !postid) {
+            res.status(400).json({ error: 'Classid and postid parameters are required' });
+            return;
+        }
+        const answers = await pool.query(
+            'SELECT * FROM answers WHERE ticketid=$2',
+            [postid]);
+        res.json(answers.rows);
+        console.log(answers.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+// upvote a post
+app.post('/classes/:classid/posts/:postid/upvote', async (req, res) => {
+    console.log("upvote called");
+    try {
+        const classid = req.params.classid;
+        const postid = req.params.postid;
+        if (!classid || !postid) {
+            res.status(400).json({ error: 'Classid and postid parameters are required' });
+            return;
+        }
+        const upvote = await pool.query(
+            'UPDATE posts SET totalvote = totalvote + 1 WHERE ticketid = $1',
+            [postid]);
+        res.json(upvote.rows);
+        console.log(upvote.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+// downvote a post
+app.post('/classes/:classid/posts/:postid/downvote', async (req, res) => {
+    console.log("downvote called");
+    try {
+        const classid = req.params.classid;
+        const postid = req.params.postid;
+        if (!classid || !postid) {
+            res.status(400).json({ error: 'Classid and postid parameters are required' });
+            return;
+        }
+        const downvote = await pool.query(
+            'UPDATE posts SET totalvote = totalvote - 1 WHERE ticketid = $1',
+            [postid]);
+        res.json(downvote.rows);
+        console.log(downvote.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
 
 
 

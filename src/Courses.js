@@ -23,8 +23,7 @@ const Courses = ({userId}) => {
   <div className="mx-auto max-w-screen-xl px-4 py-8" style={{height:'80%'}}>
     <div className="sm:flex sm:items-center sm:justify-between">
       <div className="text-center sm:text-left">
-      <h1 className=" mt-4 mb-4 text-4xl font-semibold	 text-gray-900"> Welcome<span className="text-transparent bg-clip-text bg-gradient-to-r to-indigo-600 from-sky-400 ">  {userId}! </span> </h1>   
-    
+      
 
         <p className="mt-1.5 text-sm text-gray-500">
           Here are your current courses
