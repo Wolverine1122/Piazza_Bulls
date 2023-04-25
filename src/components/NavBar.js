@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Avatar } from "@chakra-ui/react";
 // This navbar appears after user logs in
 
-const NavBar = ({courseID}) => {
+const NavBar = ({userId, courseID}) => {
     return (
         <Grid maxW={1000} templateColumns={'1fr 2fr 1fr'} gap={250} py={5} alignItems="center" justifyItems="center">
             <GridItem>
@@ -11,14 +11,14 @@ const NavBar = ({courseID}) => {
             </GridItem>
             <Grid templateColumns={'1fr 1fr'} gap={100} alignItems="center" justifyItems="center">
                 <GridItem>
-                    <Link to={'/courses'}>My classes</Link>
+                    <Link to={`/courses/${userId}`}>My classes</Link>
                 </GridItem>
                 <GridItem>
-                    <Link to={`/courses/${courseID}/saved`}>Saved</Link>
+                    <Link to={`/courses/${userId}/course/:${courseID}/saved`}>Saved</Link>
                 </GridItem>
             </Grid>
             <GridItem>
-                <Avatar size='sm' name='Dan Abrahmov' src='https://bit.ly/dan-abramov'/>
+                <Avatar size='sm' name={userId} bg='teal.500'/>
             </GridItem>
         </Grid>
     );
