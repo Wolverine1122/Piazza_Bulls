@@ -1,26 +1,43 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import './style.css';
 
-const SignUp = (props) => {
+const SignUp = () => {
     
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
     const[role,setSelects ] = useState();
     const [errors, setErrors] = useState({});
+    const [userExists, setUserExists] = useState(null);
+
+    let navigate = useNavigate(); 
+    
+ //check if user exists  
+const fetchUserExists = async () => {
+      const response = await fetch(`http://localhost:5000/checkUserExists/${email}`);
+      const data = await response.json();
+      setUserExists(data);
+};
+ 
 
     //validation function 
     const validateForm = () => {
         let errors = {};
         let isValid = true;
     
+      
         if (!username.trim()) {
             errors.username = 'Username is required';
             isValid = false;
         }
     
-    
+        fetchUserExists();
+        if(userExists){
+            errors.userExists = 'User already exists';
+            isValid = false;
+         }
+
         if (!email.trim()) {
             errors.email = 'Email is required';
             isValid = false;
@@ -28,6 +45,7 @@ const SignUp = (props) => {
             errors.email = 'Email is invalid';
             isValid = false;
         }
+        
     
         if (!pass.trim()) {
             errors.pass = 'Password is required';
@@ -42,10 +60,13 @@ const SignUp = (props) => {
         return isValid;
     };
     
+
+    
     //connect here 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
             
+       
         // TODO:  check if user exists already, hash password before sending to server
         //async (req, res) =>
         const body = {
@@ -54,19 +75,10 @@ const SignUp = (props) => {
             email: email,
             password: pass
         }
-   
-         //check if user exists    
-       /* const rep = fetch('http://localhost:5000/checkUserExists', {
-            method: 'GET', 
-            headers: { 
-            'Content-Type': 'application/json'}, 
-            body:JSON.stringify(body)
-        })
-            .then(rep => console.log(rep));*/
-       
-            
-    
+        
+        
         if(validateForm()){
+        
         const response = fetch('http://localhost:5000/sign-up', {
             method: 'POST',
             headers: {
@@ -80,7 +92,7 @@ const SignUp = (props) => {
         console.log(email);
         console.log(pass);
         console.log(response);
-
+        navigate(`/log-in`);
 
         
     }
@@ -108,6 +120,7 @@ const SignUp = (props) => {
                     <label htmlFor="email" className="block text-base mb-2">Email</label>
                     <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="email" id="email" name="email" className=" mb-2 bg-white-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
                     {errors.email && <span className="text-red-500">{errors.email}</span>}
+                    {errors.userExists && <span className="text-red-500">{errors.userExists} </span>}
 
                     <label htmlFor="password" className="block text-base mb-2">Password</label>
                     <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="password" id="password" name="password" className=" mb-2 bg-white-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />

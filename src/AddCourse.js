@@ -50,7 +50,7 @@ const AddCourse = ({userId}) => {
     }
   
 
-    if(role == 'Professor')
+    if(role === 'Professor')
     {
         return (
         <div>

@@ -15,11 +15,11 @@ app.post('/sign-up', async (req, res) => {
     try {
         const { role, username, email, password } = req.body;
         var permissionid = 0;
-        if (role.toLowerCase() === 'student')
+        if (role === 'Student')
             permissionid = 0;
-        else if (role.toLowerCase() == 'teacher' || 'professor')
+        else if (role === 'Professor')
             permissionid = 1;
-        else if (role.toLowerCase() == 'ta' || 'teaching assistant')
+        else if (role === 'TA')
             permissionid = 2;
 
 
@@ -50,20 +50,23 @@ app.get('/getrole/:username', async (req, res) => {
 });
 
 // return true if the user exists in the database with the email
-app.get('/checkUserExists', async (req, res) => {
+app.get('/checkUserExists/:email', async (req, res) => {
     console.log('userExists called ');
+    const email = req.params.email;
+    console.log(email);
     try {
-        const { email } = req.body;
-        if (!email) {
-            res.status(400).json({ error: 'Email parameter is required' });
-            return;
-        }
         const user = await pool.query(
-            'SELECT * FROM users WHERE email = $1',
+            'SELECT  username FROM users WHERE email = $1',
             [email]
         );
-        const userExists = user.rows.length > 0;
+        var userExists = false; 
+        console.log(user);
+        if(user.rowCount != 0)
+        { userExists = true;}
+       
         res.json(userExists);
+        console.log(userExists);
+
     } catch (err) {
         console.error(err.message);
     }
