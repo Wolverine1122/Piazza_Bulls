@@ -49,6 +49,7 @@ app.get('/getrole/:username', async (req, res) => {
 
 });
 
+
 // return true if the user exists in the database with the email
 app.get('/checkUserExists/:email', async (req, res) => {
     console.log('userExists called ');
@@ -116,6 +117,17 @@ app.get('/classes/:username', async (req, res) => {
             'SELECT * FROM classes NATURAL JOIN memberof WHERE memberof.username=$1',
             [username]
         );
+        // getting membercount per class
+         // loop through each class to get the member count
+         for (let i = 0; i < classes.rows.length; i++) {
+            const classid = classes.rows[i].classid;
+            const memberCount = await pool.query(
+                'SELECT COUNT(Username) FROM MemberOf WHERE classID=$1',
+                [classid]
+            );
+            classes.rows[i].memberCount = memberCount.rows[0].count;
+        }    
+
         res.json(classes.rows);
         console.log(classes.rows);
     } catch (err) {
