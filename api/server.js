@@ -32,6 +32,42 @@ function getPermission(role) {
     return permissionid;
 }
 
+async function getRole(username) {
+
+    const role = await pool.query(
+        'SELECT role FROM users WHERE username = $1',
+        [username]
+    );
+    if (role.rows.length === 0)
+
+        return null;
+    else {
+        switch (role.rows[0].role.toString().toLowerCase()) {
+            case Roles.Professor:
+                return Roles.Professor;
+            case Roles.TA:
+                return Roles.TA;
+            case Roles.Student:
+                return Roles.Student;
+            default:
+                return null;
+
+        }
+    }
+}
+
+
+async function getClassID(classcode) {
+    const classidReq = await pool.query(
+        'SELECT classid FROM classes WHERE classcode = $1',
+        [classcode]
+    );
+
+    if (classidReq.rowCount == 0)
+        return null;
+    const classid = classidReq.rows[0].classid;
+    return classid;
+}
 // sign up a user
 app.post('/sign-up', async (req, res) => {
     console.log("sign up called")
@@ -170,15 +206,21 @@ app.get('/classes/:username', async (req, res) => {
 });
 
 // Get a list of posts for a course
-app.get("/classes/:classid/posts", async (req, res) => {
+app.get("/classes/:classcode/posts", async (req, res) => {
 
     console.log("posts called");
     try {
-        const classid = req.params.classid;
-        if (!classid) {
-            res.status(400).json({ error: 'Classid parameter is required' });
+        const classcode = req.params.classcode;
+        if (!classcode) {
+            res.status(400).json({ error: 'Classcode parameter is required' });
             return;
+
         }
+        const classidReq = await pool.query(
+            'SELECT classid FROM classes WHERE classcode = $1',
+            [classcode]
+        );
+        const classid = classidReq.rows[0].classid;
         const posts = await pool.query(
             'SELECT * FROM posts WHERE classid=$1',
             [classid]
@@ -194,6 +236,14 @@ app.post('/classes/:username/addcourse', async (req, res) => {
     console.log("i am here");
     console.log("add course called");
     const username = req.params.username;
+    const { classcode } = req.body;
+    const classid = await getClassID(classcode);
+    console.log("classid: " + classid)
+    if (!classid) {
+        res.status(400).json({ error: 'Invalid classcode' });
+        return;
+    }
+
     if (!username) {
         res.status(400).json({ error: 'Username parameter is required' });
         return;
@@ -202,11 +252,11 @@ app.post('/classes/:username/addcourse', async (req, res) => {
         'SELECT role FROM users WHERE username = $1',
         [username]
     );
-//    convert to  lowercase string
+    //    convert to  lowercase string
     const role = roleQuery.rows[0].role.toString().toLowerCase();
-   console.log(role);
-    
-    if (role  == Roles.Professor) {
+    console.log(role);
+
+    if (role == Roles.Professor) {
         console.log("i am a professor");
         const { classcode, classtitle, description } = req.body;
         if (!classcode || !classtitle || !description) {
@@ -229,16 +279,11 @@ app.post('/classes/:username/addcourse', async (req, res) => {
     }
     else if (role === Roles.Student || Roles.TA) {
         console.log("I am a student/TA");
-        const { classcode } = req.body;
+
         if (!classcode) {
             res.status(400).json({ error: 'classcode is required' });
             return;
         }
-        const classidReq = await pool.query(
-            'SELECT classid FROM classes WHERE classcode = $1',
-            [classcode]
-        );
-        const classid = classidReq.rows[0].classid;
 
 
         const newMem = await pool.query('INSERT INTO MemberOf (username, classid) VALUES ($1, $2) RETURNING * ',
@@ -253,9 +298,8 @@ app.post('/classes/:username/addcourse', async (req, res) => {
         return;
 
     }
-
-
 });
+
 
 // get list of topics for specific class
 app.get('/classes/:classid/topics', async (req, res) => {
@@ -360,19 +404,24 @@ app.post('/classes/:classid/posts/:postid/downvote', async (req, res) => {
 });
 
 // add a post
-app.post('/classes/:classid/posts', async (req, res) => {
+app.post('/classes/:classcode/posts', async (req, res) => {
     console.log("add post called");
     try {
-        const classid = req.params.classid;
-        const { topicid, username, title, description, activityTag } = req.body;
+        const classcode = req.params.classcode;
+        const classid = await getClassID(classcode);
+        if (!classid) {
+            res.status(400).json({ error: 'Invalid classcode' });
+            return;
+        }
+        const { topicid, username, title, description, postType } = req.body;
 
-        if (!classid || !topicid || !username || !title || !description || !activityTag) {
-            res.status(400).json({ error: 'Classid, topicid, username, title, description, and activityTag parameters are required' });
+        if (!classid || !topicid || !username || !title || !description || !postType) {
+            res.status(400).json({ error: 'Classid, topicid, username, title, description, and postType parameters are required' });
             return;
         }
         const insertQuery = {
             text: 'SELECT InsertPost($1, $2, $3, $4, $5, $6)',
-            values: [classid, topicid, title, description, username, activityTag]
+            values: [classid, topicid, title, description, username, postType]
         }
 
         const post = await pool.query(insertQuery);
@@ -383,8 +432,36 @@ app.post('/classes/:classid/posts', async (req, res) => {
     }
 });
 
+// add a topic for a class 
+app.post("/classes/:classcode/:username/topics", async (req, res) => {
+    console.log("add topic called");
+    try {
+        const classcode = req.params.classcode;
+        const username = req.params.username;
+        const role = await getRole(username);
+        if (role == Roles.Student) {
+            res.status(400).json({ error: 'Students cannot add topics' });
+            return;
+        }
 
-
+        const { title, description } = req.body;
+        if (!classcode || !title || !description) {
+            res.status(400).json({ error: 'Classcode, title, and description parameters are required' });
+            return;
+        }
+        const classid = await getClassID(classcode);
+        const insertQuery = {
+            text: 'SELECT InsertTopic($1, $2, $3, $4)',
+            values: [classid, title, description, username]
+        }
+        const topic = await pool.query(insertQuery);
+        res.json(topic.rows[0].inserttopic);
+        console.log(topic.topic.rows[0].inserttopic);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
