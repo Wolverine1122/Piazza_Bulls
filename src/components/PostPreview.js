@@ -1,4 +1,4 @@
-import {Card, CardHeader, Heading, CardBody, CardFooter, Text, Grid, IconButton, Tag} from '@chakra-ui/react';
+import {Card, CardHeader, Heading, CardBody, CardFooter, Text, Grid, Tag, Button, GridItem} from '@chakra-ui/react';
 import {ViewIcon, ChatIcon, ChevronUpIcon, ChevronDownIcon} from '@chakra-ui/icons';
 import TimeTag from './TimeTag';
 
@@ -36,12 +36,20 @@ const PostPreview = (props) => {
                     </Grid>
                     <Grid gap={'3'} templateColumns={'1fr max-content'}>
                         <Grid gap={2} templateColumns={'1fr 1fr'}>
-                            <IconButton colorScheme='blue' aria-label='view' icon={<ViewIcon/>} size='sm'/>
-                            <IconButton colorScheme='blue' aria-label='comment' icon={<ChatIcon/>} size='sm'/>
+                            <Button flex='1' variant='ghost' iconSpacing='5px' leftIcon={<ViewIcon />}>View</Button>
+                            <Button flex='1' variant='ghost' iconSpacing='5px' leftIcon={<ChatIcon />}>Comment</Button>
+                            
                         </Grid>
-                        <Grid gap={1} templateColumns={'1fr 1fr'} justifyContent={'right'}>
-                            <IconButton colorScheme='blue' aria-label='upvote' icon={<ChevronUpIcon/>} size='sm' variant='outline'/>
-                            <IconButton colorScheme='red' aria-label='downvote' icon={<ChevronDownIcon/>} size='sm' variant='outline'/>
+                        <Grid templateColumns={'1.5em max-content 1.5em'} alignContent='center' justifyContent={'space-between'}>
+                            <GridItem>
+                                <ChevronUpIcon color='red' boxSize='1.5em'/>
+                            </GridItem>
+                            <GridItem>
+                                <p>{props.data.totalvote}</p>
+                            </GridItem>
+                            <GridItem>
+                                <ChevronDownIcon color='blue' boxSize='1.5em'/>
+                            </GridItem>
                         </Grid>
                     </Grid>
                 </Grid>

@@ -27,7 +27,7 @@ const Posts = ({userId}) => {
             <NavBar userId={userId} courseID={id}/>
             <SearchBar/>
             <Heading size='lg' mb={50} textAlign={'center'}>Posts in Course {id}</Heading>
-            <SimpleGrid spacing={5} templateColumns='repeat(auto-fill, minmax(250px, 1fr))'>
+            <SimpleGrid spacing={5} templateColumns='repeat(auto-fill, minmax(300px, 1fr))'>
                 {posts.map((dataItem, index) => (
                     <PostPreview key={index} data={dataItem} />
                 ))}

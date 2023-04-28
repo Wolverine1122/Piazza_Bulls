@@ -1,6 +1,6 @@
 import {Grid} from '@chakra-ui/react';
 
-const Post = () => {
+const Post = (props) => {
     return (
         <Grid>
             <h1>Post</h1>
