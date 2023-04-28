@@ -18,22 +18,26 @@ const fetchUserExists = async () => {
       const response = await fetch(`http://localhost:5000/checkUserExists/${email}`);
       const data = await response.json();
       setUserExists(data);
+    return data;
 };
  
 
     //validation function 
-    const validateForm = () => {
+    const validateForm = async () =>  {
         let errors = {};
         let isValid = true;
-    
+        
+        fetchUserExists();
       
         if (!username.trim()) {
             errors.username = 'Username is required';
             isValid = false;
         }
     
-        fetchUserExists();
-        if(userExists){
+        await fetchUserExists();
+        console.log("user exists: " + userExists);
+        
+        if(userExists || userExists === null){
             errors.userExists = 'User already exists';
             isValid = false;
          }
