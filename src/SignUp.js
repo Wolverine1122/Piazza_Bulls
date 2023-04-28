@@ -54,7 +54,13 @@ const fetchUserExists = async () => {
             errors.pass = 'Password must be at least 6 characters long';
             isValid = false;
         }
-    
+        // if role is not selected
+        if (!role) {
+            errors.role = 'Role is required';
+            isValid = false;
+        }
+
+
         setErrors(errors);
     
         return isValid;
@@ -107,10 +113,12 @@ const fetchUserExists = async () => {
                 <form className="" onSubmit={handleSubmit}>
                     <label htmlFor="role" className="block text-base mb-2">Role</label>
                     <select value={role} onChange={(e) => setSelects(e.target.value)} type="role" placeholder="role" id="role" name="role" className="mb-2 bg-white-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5">  
+                        <option>Select Role</option>
                         <option>Student</option>
                         <option>Professor</option>
                         <option>TA</option>
                     </select>
+                    {errors.role && <span className="text-red-500">{errors.role}</span>}
                    
 
                     <label htmlFor="username" className="block text-base mb-2">Username</label>

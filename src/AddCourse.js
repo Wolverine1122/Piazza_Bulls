@@ -27,7 +27,7 @@ const AddCourse = ({userId}) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const body = {
-            classid: classid,
+            classcode: classid,
             classtitle: classtitle,
             description: description,}
     
